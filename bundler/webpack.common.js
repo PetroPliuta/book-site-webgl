@@ -26,7 +26,9 @@ module.exports = {
                 template: path.resolve(__dirname, '../src/index.html'),
                 minify: true
             }),
-            new MiniCSSExtractPlugin()
+            new MiniCSSExtractPlugin({
+                filename: 'styles/[name].[contenthash].css' // додаємо хеш для CSS
+            })
         ],
     module:
     {
