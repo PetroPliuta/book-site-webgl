@@ -35,9 +35,36 @@ let drevnePlayed = false;
 let stoneVisible = true;
 let staroPlayed = false;
 
-window.addEventListener('load', ()=>{
+window.addEventListener('load', () => {
     startButton.style.display = 'block';
     document.querySelector('#loading').style.display = 'none'
+})
+
+// CAMERA
+const camera = new THREE.PerspectiveCamera(70, width / height);
+camera.position.set(-1, 2, 5);
+scene.add(camera);
+
+// AUDIO
+const listener = new THREE.AudioListener();
+camera.add(listener);
+// create a global audio source
+const drevne = new THREE.Audio(listener);
+// load a sound and set it as the Audio object's buffer
+const audioLoader = new THREE.AudioLoader();
+audioLoader.load('sounds/drevne.mp3', function (buffer) {
+    drevne.setBuffer(buffer);
+    drevne.setLoop(false);
+    drevne.setVolume(0.5);
+    // drevne.play();
+});
+
+const staro = new THREE.Audio(listener);
+const staroLoader = new THREE.AudioLoader();
+staroLoader.load('sounds/staro.mp3', (buffer) => {
+    staro.setBuffer(buffer)
+    staro.setLoop(false)
+    staro.setVolume(0.5)
 })
 
 // HELPER / DEBUG
@@ -45,10 +72,7 @@ window.addEventListener('load', ()=>{
 // scene.add(axesHelper);
 // console.log(scene)
 
-// CAMERA
-const camera = new THREE.PerspectiveCamera(70, width / height);
-camera.position.set(-1, 2, 5);
-scene.add(camera);
+
 
 // STONE
 // Load a stone texture
@@ -160,20 +184,21 @@ function tick() {
     const delta = clock.getDelta()
 
     if (clock.getElapsedTime() > 1.5 && !drevnePlayed) {
-        const listener = new THREE.AudioListener();
-        camera.add(listener);
+        // const listener = new THREE.AudioListener();
+        // camera.add(listener);
 
-        // create a global audio source
-        const sound = new THREE.Audio(listener);
+        // // create a global audio source
+        // const sound = new THREE.Audio(listener);
 
-        // load a sound and set it as the Audio object's buffer
-        const audioLoader = new THREE.AudioLoader();
-        audioLoader.load('sounds/drevne.mp3', function (buffer) {
-            sound.setBuffer(buffer);
-            sound.setLoop(false);
-            sound.setVolume(0.5);
-            sound.play();
-        });
+        // // load a sound and set it as the Audio object's buffer
+        // const audioLoader = new THREE.AudioLoader();
+        // audioLoader.load('sounds/drevne.mp3', function (buffer) {
+        //     sound.setBuffer(buffer);
+        //     sound.setLoop(false);
+        //     sound.setVolume(0.5);
+        //     sound.play();
+        // });
+        drevne.play();
         drevnePlayed = true;
     }
 
@@ -184,20 +209,21 @@ function tick() {
     }
 
     if (clock.getElapsedTime() > 4 && !staroPlayed) {
-        const listener = new THREE.AudioListener();
-        camera.add(listener);
+        // const listener = new THREE.AudioListener();
+        // camera.add(listener);
 
-        // create a global audio source
-        const sound = new THREE.Audio(listener);
+        // // create a global audio source
+        // const sound = new THREE.Audio(listener);
 
-        // load a sound and set it as the Audio object's buffer
-        const audioLoader = new THREE.AudioLoader();
-        audioLoader.load('sounds/staro.mp3', function (buffer) {
-            sound.setBuffer(buffer);
-            sound.setLoop(false);
-            sound.setVolume(0.5);
-            sound.play();
-        });
+        // // load a sound and set it as the Audio object's buffer
+        // const audioLoader = new THREE.AudioLoader();
+        // audioLoader.load('sounds/staro.mp3', function (buffer) {
+        //     sound.setBuffer(buffer);
+        //     sound.setLoop(false);
+        //     sound.setVolume(0.5);
+        //     sound.play();
+        // });
+        staro.play()
         staroPlayed = true;
     }
 
