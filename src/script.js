@@ -2,9 +2,14 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 import './style.css';
-import stoneTextureImage from './textures/stone.jpg';
-import roadTextureImage from './textures/road.jpg';
-import grassTextureImage from './textures/grass.jpg';
+// import stoneTextureImage from './textures/stone.jpg';
+// import roadTextureImage from './textures/road.jpg';
+// import grassTextureImage from './textures/grass.jpg';
+
+import stoneTextureImage from './textures/stone_small.jpg';
+import roadTextureImage from './textures/road_small.jpg';
+import grassTextureImage from './textures/grass_small.jpg';
+
 import skyTextureImage from './textures/sky.jpg';
 
 import createRoadSign from './models/RoadSign.js';
@@ -29,6 +34,11 @@ startButton.addEventListener('click', () => {
 let drevnePlayed = false;
 let stoneVisible = true;
 let staroPlayed = false;
+
+window.addEventListener('load', ()=>{
+    startButton.style.display = 'block';
+    document.querySelector('#loading').style.display = 'none'
+})
 
 // HELPER / DEBUG
 // const axesHelper = new THREE.AxesHelper(30);
