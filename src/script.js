@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+// import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 import './style.css';
 // import stoneTextureImage from './textures/stone.jpg';
@@ -89,6 +89,7 @@ const stoneMaterial = new THREE.MeshStandardMaterial({
 });
 const stone = new THREE.Mesh(stoneGeometry, stoneMaterial)
 scene.add(stone)
+camera.lookAt(stone.position)
 
 // ROAD
 const roadGeometry = new THREE.PlaneGeometry(5, 100, 5, 100);
@@ -150,24 +151,15 @@ const renderer = new THREE.WebGLRenderer({
     canvas,
     antialias: true,
 })
-// const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(width, height);
-// renderer.setAnimationLoop(animate);
 renderer.render(scene, camera);
-// document.body.appendChild(renderer.domElement);
 
-// const clock = new THREE.Clock();
-
-// window.addEventListener('mousemove', (ev) => {
-//     cursor.x = -(ev.clientX / width - .5);
-//     cursor.y = ev.clientY / height - .5;
-// })
-
-const controls = new OrbitControls(camera, canvas);
-controls.enableDamping = true
+// controls
+// const controls = new OrbitControls(camera, canvas);
+// controls.enableDamping = true
 
 // Створюємо AnimationMixer для анімацій
-const mixer = new THREE.AnimationMixer(stone);
+const stoneMixer = new THREE.AnimationMixer(stone);
 // Визначаємо ключові кадри для анімації зникання
 const opacityKF = new THREE.NumberKeyframeTrack('.material.opacity', [0, 1], [1, 0]);
 // Визначаємо ключові кадри для зменшення scale
@@ -175,29 +167,33 @@ const scaleKF = new THREE.VectorKeyframeTrack('.scale', [0, 1], [1, 1, 1, 0, 0, 
 // Створюємо анімаційний кліп тривалістю 1 секунда
 const fadeAndScaleClip = new THREE.AnimationClip('fadeandScale', 1, [opacityKF, scaleKF]);
 // Додаємо анімаційний кліп до міксера
-const fadeAction = mixer.clipAction(fadeAndScaleClip);
+const fadeAction = stoneMixer.clipAction(fadeAndScaleClip);
 fadeAction.setLoop(THREE.LoopOnce); // запускаємо тільки один раз
 fadeAction.clampWhenFinished = true; // зупиняємо анімацію, коли вона завершується
 
+// camera animation
+const cameraRotationOld = camera.quaternion.clone()
+const cameraRotationNew = new THREE.Quaternion().setFromEuler(new THREE.Euler(-0.2, 0, 0));
+
+const cameraMixer = new THREE.AnimationMixer(camera)
+const cameraMoveKF = new THREE.VectorKeyframeTrack('.position', [0, 1], [-1, 2, 5, 0, 3, 2])
+const cameraRotation = new THREE.QuaternionKeyframeTrack('.quaternion', [0, 1],
+    [
+        cameraRotationOld.x, cameraRotationOld.y, cameraRotationOld.z, cameraRotationOld.w,
+        cameraRotationNew.x, cameraRotationNew.y, cameraRotationNew.z, cameraRotationNew.w,
+    ]
+)
+const cameraClip = new THREE.AnimationClip('cameraToRoadSign', 1, [cameraMoveKF, cameraRotation])
+const cameraAction = cameraMixer.clipAction(cameraClip)
+cameraAction.setLoop(THREE.LoopOnce)
+cameraAction.clampWhenFinished = true
+
+let cameraMoved = false
 
 function tick() {
     const delta = clock.getDelta()
 
     if (clock.getElapsedTime() > 1.5 && !drevnePlayed) {
-        // const listener = new THREE.AudioListener();
-        // camera.add(listener);
-
-        // // create a global audio source
-        // const sound = new THREE.Audio(listener);
-
-        // // load a sound and set it as the Audio object's buffer
-        // const audioLoader = new THREE.AudioLoader();
-        // audioLoader.load('sounds/drevne.mp3', function (buffer) {
-        //     sound.setBuffer(buffer);
-        //     sound.setLoop(false);
-        //     sound.setVolume(0.5);
-        //     sound.play();
-        // });
         drevne.play();
         drevnePlayed = true;
     }
@@ -205,32 +201,27 @@ function tick() {
     if (clock.getElapsedTime() > 3 && stoneVisible) {
         fadeAction.play();
         stoneVisible = false;
-        // stone.geometry.scale(0, 0, 0);
     }
 
     if (clock.getElapsedTime() > 4 && !staroPlayed) {
-        // const listener = new THREE.AudioListener();
-        // camera.add(listener);
-
-        // // create a global audio source
-        // const sound = new THREE.Audio(listener);
-
-        // // load a sound and set it as the Audio object's buffer
-        // const audioLoader = new THREE.AudioLoader();
-        // audioLoader.load('sounds/staro.mp3', function (buffer) {
-        //     sound.setBuffer(buffer);
-        //     sound.setLoop(false);
-        //     sound.setVolume(0.5);
-        //     sound.play();
-        // });
         staro.play()
         staroPlayed = true;
     }
 
-    mixer.update(delta);
+    if (clock.getElapsedTime() > 5 && !cameraMoved) {
+        cameraAction.play()
+        cameraMoved = true
+        // camera.rotation.x = 0
+        // camera.rotation.y = 0
+        // camera.rotation.z = 0
+        // console.log(camera)
+    }
 
-    controls.update(delta)
-    // camera.lookAt(mesh.position);
+    stoneMixer.update(delta);
+    cameraMixer.update(delta)
+
+    // controls.update(delta)
+    // camera.update(delta)
     renderer.render(scene, camera)
     window.requestAnimationFrame(tick);
 }
