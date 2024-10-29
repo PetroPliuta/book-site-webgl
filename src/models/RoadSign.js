@@ -12,7 +12,7 @@ export default function createRoadSign(textureLoader, signText = 'Your Destinati
     context.fillStyle = 'white';
     context.fillRect(0, 0, canvas.width, canvas.height);
     context.fillStyle = 'black';
-    context.font = '30px Arial';
+    context.font = '24px Arial';
     context.textAlign = 'center';
     context.textBaseline = 'middle';
     context.fillText(signText, canvas.width / 2, canvas.height / 2);

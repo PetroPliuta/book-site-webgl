@@ -112,9 +112,9 @@ road.position.y = 0.01
 
 // ROAD SIGNS
 const roadSigns = {
-    "Налево": new THREE.Vector3(-3, 0, -5),
-    "Прямо": new THREE.Vector3(0, 0, -5),
-    "Направо": new THREE.Vector3(3, 0, -5),
+    "Книга 1 - земля": new THREE.Vector3(-3, 0, -5),
+    "Книга 2 - подземелье": new THREE.Vector3(0, 0, -5),
+    "Книга 3 - космос": new THREE.Vector3(3, 0, -5),
 }
 for (let rs in roadSigns) {
     let roadSign = createRoadSign(textureLoader, rs);
